@@ -1,11 +1,15 @@
 # Backend routes for cost calculations
-# This will contain FastAPI route handlers for cost-related endpoints
-
 from fastapi import APIRouter
+from pydantic import BaseModel
+from ..services import costService
 
 router = APIRouter(prefix="/api/cost", tags=["cost"])
 
+class CostCalculationRequest(BaseModel):
+    nodes: list
+
 @router.post("/calculate")
-async def calculate_cost():
+async def calculate_cost(request: CostCalculationRequest):
     """Calculate cost for a given architecture"""
-    return {"total_cost": 0, "breakdown": []}
+    result = costService.CostService.calculate_total_cost(request.nodes)
+    return result

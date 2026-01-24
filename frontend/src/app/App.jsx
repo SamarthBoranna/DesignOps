@@ -1,8 +1,19 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import Layout from './Layout'
+import Home from '../pages/Home/Home'
+import Workspace from '../pages/Workspace/Workspace'
+
 function App() {
   return (
-    <div>
-      <h1>DesignOps</h1>
-    </div>
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/workspace/:id" element={<Workspace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   )
 }
 
