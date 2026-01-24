@@ -1,0 +1,86 @@
+[
+  {
+    "id": "aws-api-gateway",
+    "name": "API Gateway",
+    "provider": "AWS",
+    "category": "Networking",
+    "config": {
+      "requestsPerMonth": 1000000
+    },
+    "pricing": {
+      "perMillionRequests": 3.50
+    },
+    "icon": "api-gateway",
+    "description": "Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs."
+  },
+  {
+    "id": "aws-lambda",
+    "name": "Lambda",
+    "provider": "AWS",
+    "category": "Compute",
+    "config": {
+      "requestsPerMonth": 1000000,
+      "memoryMB": 512,
+      "executionTimeMs": 100
+    },
+    "pricing": {
+      "perMillionRequests": 0.20,
+      "perGBSecond": 0.0000166667
+    },
+    "icon": "lambda",
+    "description": "AWS Lambda is a serverless compute service that runs your code in response to events and automatically manages the underlying compute resources."
+  },
+  {
+    "id": "aws-ec2",
+    "name": "EC2 Instance",
+    "provider": "AWS",
+    "category": "Compute",
+    "config": {
+      "instanceType": "t3.micro",
+      "hoursPerMonth": 730
+    },
+    "pricing": {
+      "t3.micro": 0.0104,
+      "t3.small": 0.0208,
+      "t3.medium": 0.0416
+    },
+    "icon": "ec2",
+    "description": "Amazon Elastic Compute Cloud (EC2) provides scalable computing capacity in the AWS cloud."
+  },
+  {
+    "id": "aws-s3",
+    "name": "S3 Bucket",
+    "provider": "AWS",
+    "category": "Storage",
+    "config": {
+      "storageGB": 100,
+      "requestsPerMonth": 10000,
+      "dataTransferGB": 10
+    },
+    "pricing": {
+      "perGBStorage": 0.023,
+      "per1000Requests": 0.005,
+      "perGBTransfer": 0.09
+    },
+    "icon": "s3",
+    "description": "Amazon Simple Storage Service (S3) is an object storage service offering industry-leading scalability, data availability, security, and performance."
+  },
+  {
+    "id": "aws-rds",
+    "name": "RDS Database",
+    "provider": "AWS",
+    "category": "Database",
+    "config": {
+      "instanceType": "db.t3.micro",
+      "storageGB": 20,
+      "hoursPerMonth": 730
+    },
+    "pricing": {
+      "db.t3.micro": 0.017,
+      "db.t3.small": 0.034,
+      "perGBStorage": 0.115
+    },
+    "icon": "rds",
+    "description": "Amazon Relational Database Service (RDS) makes it easy to set up, operate, and scale a relational database in the cloud."
+  }
+]
