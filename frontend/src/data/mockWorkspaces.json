@@ -30,5 +30,77 @@
     "createdAt": "2024-01-05T12:00:00Z",
     "updatedAt": "2024-01-12T09:20:00Z",
     "nodes": []
+  },
+  {
+    "id": "workspace-e8227262",
+    "name": "Testing",
+    "createdAt": "2026-01-24T22:40:45.442385Z",
+    "updatedAt": "2026-01-24T22:43:16.293792Z",
+    "nodes": [
+      {
+        "nodeId": "node-8",
+        "componentId": "aws-api-gateway",
+        "componentName": "API Gateway",
+        "position": {
+          "x": -281.89800510455007,
+          "y": -1.9576030414289676
+        },
+        "configOverrides": {}
+      },
+      {
+        "nodeId": "node-9",
+        "componentId": "aws-lambda",
+        "componentName": "Lambda",
+        "position": {
+          "x": -38.121376544426255,
+          "y": 107.33926531528513
+        },
+        "configOverrides": {
+          "requestsPerMonth": 1000000,
+          "memoryMB": 1024,
+          "executionTimeMs": 100
+        }
+      },
+      {
+        "nodeId": "node-10",
+        "componentId": "aws-ec2",
+        "componentName": "EC2 Instance",
+        "position": {
+          "x": 1008.7646305912192,
+          "y": -15.980116693938612
+        },
+        "configOverrides": {}
+      },
+      {
+        "nodeId": "node-11",
+        "componentId": "aws-api-gateway",
+        "componentName": "API Gateway",
+        "position": {
+          "x": 179.6767971601647,
+          "y": 59.84633122674455
+        },
+        "configOverrides": {}
+      },
+      {
+        "nodeId": "node-12",
+        "componentId": "aws-lambda",
+        "componentName": "Lambda",
+        "position": {
+          "x": -4.795551269942033,
+          "y": -31.770808262033288
+        },
+        "configOverrides": {}
+      },
+      {
+        "nodeId": "node-13",
+        "componentId": "aws-lambda",
+        "componentName": "Lambda",
+        "position": {
+          "x": 505.28906318109136,
+          "y": 54.894053416540345
+        },
+        "configOverrides": {}
+      }
+    ]
   }
 ]
