@@ -10,7 +10,7 @@ A multi-cloud architecture design platform that provides real-time cost insights
 
 ### Frontend
 - **React** (^19.2.0) - UI library for building user interfaces
-- **TypeScript** (~5.9.3) - Typed superset of JavaScript
+- **JavaScript** (ES2020+) - Programming language
 - **Vite** (^7.2.4) - Next-generation frontend build tool
 - **Tailwind CSS** - Utility-first CSS framework for styling
 
@@ -24,7 +24,6 @@ The backend uses **uv** for Python package management. Dependencies are defined 
 ### Frontend Dependencies
 The frontend uses **npm** for package management. Dependencies are defined in `ui/package.json`:
 - React and React DOM (^19.2.0)
-- TypeScript and type definitions
 - Vite and Vite React plugin
 - ESLint for code linting
 
@@ -76,5 +75,5 @@ The frontend uses **npm** for package management. Dependencies are defined in `u
 
 ### Development Notes
 
-- The frontend is configured to proxy API requests from `/api` to `http://localhost:8000` (see `ui/vite.config.ts`)
+- The frontend is configured to proxy API requests from `/api` to `http://localhost:8000` (see `ui/vite.config.js`)
 - The backend health check endpoint is available at `http://localhost:8000/health`
