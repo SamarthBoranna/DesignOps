@@ -1,6 +1,33 @@
 # DesignOps
 A multi-cloud architecture design platform that provides real-time cost insights, AI-powered diagram assistance, and comprehensive resource metrics across AWS, Azure, and GCP. 
 
+## Project Structure
+
+```
+DesignOps/
+├── frontend/              # React frontend application
+│   ├── src/
+│   │   ├── app/          # Core app files (App.js, Layout.js, routes.js)
+│   │   ├── pages/        # Page components (Home/, Workspace/)
+│   │   ├── components/   # Reusable components (panels/, workspace/, ui/)
+│   │   ├── state/        # State management (workspaceStore, componentStore, etc.)
+│   │   ├── services/     # API and service integrations
+│   │   ├── data/         # Static data files (components/, mockWorkspaces.json)
+│   │   └── utils/        # Utility functions
+│   └── public/           # Static assets
+│
+├── backend/              # Python FastAPI backend
+│   ├── src/
+│   │   ├── index.py     # Main application entry point
+│   │   ├── routes/      # API route handlers (components, workspaces, cost)
+│   │   ├── services/    # Business logic services
+│   │   └── data/        # Backend data files
+│   └── pyproject.toml   # Python dependencies
+│
+└── shared/              # Shared schemas and utilities
+    └── componentSchema.js
+```
+
 ## Tech Stack
 
 ### Backend
@@ -22,7 +49,7 @@ The backend uses **uv** for Python package management. Dependencies are defined 
 - `uvicorn>=0.39.0`
 
 ### Frontend Dependencies
-The frontend uses **npm** for package management. Dependencies are defined in `ui/package.json`:
+The frontend uses **npm** for package management. Dependencies are defined in `frontend/package.json`:
 - React and React DOM (^19.2.0)
 - Vite and Vite React plugin
 - ESLint for code linting
@@ -49,16 +76,16 @@ The frontend uses **npm** for package management. Dependencies are defined in `u
 
 3. Run the FastAPI server:
    ```bash
-   uv run uvicorn app.main:app --reload
+   uv run uvicorn src.index:app --reload
    ```
 
    The backend API will be available at `http://localhost:8000`
 
 #### Frontend
 
-1. Navigate to the ui directory:
+1. Navigate to the frontend directory:
    ```bash
-   cd ui
+   cd frontend
    ```
 
 2. Install dependencies:
@@ -75,5 +102,5 @@ The frontend uses **npm** for package management. Dependencies are defined in `u
 
 ### Development Notes
 
-- The frontend is configured to proxy API requests from `/api` to `http://localhost:8000` (see `ui/vite.config.js`)
+- The frontend is configured to proxy API requests from `/api` to `http://localhost:8000` (see `frontend/vite.config.js`)
 - The backend health check endpoint is available at `http://localhost:8000/health`
