@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { apiPost } from '../../../utils/api'
 import './CostPanel.css'
 
 function CostPanel({ nodes }) {
@@ -16,11 +17,7 @@ function CostPanel({ nodes }) {
   const calculateCost = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/cost/calculate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes })
-      })
+      const response = await apiPost('/api/cost/calculate', { nodes })
       const data = await response.json()
       setCostData(data)
     } catch (error) {

@@ -1,79 +1,145 @@
-# Backend services for workspace operations
-import json
-import uuid
+# Backend services for workspace operations using Supabase
 from datetime import datetime
-from pathlib import Path
+from .supabaseService import SupabaseService
 
 class WorkspaceService:
-    _workspaces_file = None
     
     @staticmethod
-    def _get_workspaces_file():
-        """Get path to workspaces storage file"""
-        if WorkspaceService._workspaces_file is None:
-            backend_dir = Path(__file__).parent.parent.parent
-            project_root = backend_dir.parent
-            WorkspaceService._workspaces_file = project_root / "frontend" / "src" / "data" / "mockWorkspaces.json"
-        return WorkspaceService._workspaces_file
+    def get_all_workspaces(user_id: str):
+        """Retrieve all workspaces for a specific user"""
+        client = SupabaseService.get_client()
+        
+        response = client.table("workspaces").select("*").eq("user_id", user_id).order("updated_at", desc=True).execute()
+        
+        workspaces = []
+        for workspace in response.data:
+            # Get nodes for each workspace
+            nodes_response = client.table("nodes").select("*").eq("workspace_id", workspace["id"]).execute()
+            
+            workspaces.append({
+                "id": workspace["id"],
+                "name": workspace["name"],
+                "createdAt": workspace["created_at"],
+                "updatedAt": workspace["updated_at"],
+                "nodes": [
+                    {
+                        "nodeId": node["node_id"],
+                        "componentId": node["component_id"],
+                        "componentName": node["component_name"],
+                        "position": node["position"],
+                        "configOverrides": node["config_overrides"]
+                    }
+                    for node in nodes_response.data
+                ]
+            })
+        
+        return workspaces
     
     @staticmethod
-    def _load_workspaces():
-        """Load workspaces from JSON file"""
-        workspaces_file = WorkspaceService._get_workspaces_file()
-        if workspaces_file.exists():
-            with open(workspaces_file, 'r') as f:
-                return json.load(f)
-        return []
-    
-    @staticmethod
-    def _save_workspaces(workspaces):
-        """Save workspaces to JSON file"""
-        workspaces_file = WorkspaceService._get_workspaces_file()
-        with open(workspaces_file, 'w') as f:
-            json.dump(workspaces, f, indent=2)
-    
-    @staticmethod
-    def get_all_workspaces():
-        """Retrieve all workspaces"""
-        return WorkspaceService._load_workspaces()
-    
-    @staticmethod
-    def create_workspace(name: str):
-        """Create a new workspace"""
-        workspaces = WorkspaceService._load_workspaces()
-        new_workspace = {
-            "id": f"workspace-{uuid.uuid4().hex[:8]}",
+    def create_workspace(name: str, user_id: str):
+        """Create a new workspace for a user"""
+        client = SupabaseService.get_client()
+        
+        response = client.table("workspaces").insert({
             "name": name,
-            "createdAt": datetime.utcnow().isoformat() + "Z",
-            "updatedAt": datetime.utcnow().isoformat() + "Z",
+            "user_id": user_id
+        }).execute()
+        
+        workspace = response.data[0]
+        
+        return {
+            "id": workspace["id"],
+            "name": workspace["name"],
+            "createdAt": workspace["created_at"],
+            "updatedAt": workspace["updated_at"],
             "nodes": []
         }
-        workspaces.append(new_workspace)
-        WorkspaceService._save_workspaces(workspaces)
-        return new_workspace
     
     @staticmethod
-    def get_workspace_by_id(workspace_id: str):
-        """Retrieve a specific workspace by ID"""
-        workspaces = WorkspaceService._load_workspaces()
-        return next((w for w in workspaces if w.get("id") == workspace_id), None)
+    def get_workspace_by_id(workspace_id: str, user_id: str):
+        """Retrieve a specific workspace by ID for a user"""
+        client = SupabaseService.get_client()
+        
+        response = client.table("workspaces").select("*").eq("id", workspace_id).eq("user_id", user_id).execute()
+        
+        if not response.data:
+            return None
+        
+        workspace = response.data[0]
+        
+        # Get nodes for this workspace
+        nodes_response = client.table("nodes").select("*").eq("workspace_id", workspace_id).execute()
+        
+        return {
+            "id": workspace["id"],
+            "name": workspace["name"],
+            "createdAt": workspace["created_at"],
+            "updatedAt": workspace["updated_at"],
+            "nodes": [
+                {
+                    "nodeId": node["node_id"],
+                    "componentId": node["component_id"],
+                    "componentName": node["component_name"],
+                    "position": node["position"],
+                    "configOverrides": node["config_overrides"]
+                }
+                for node in nodes_response.data
+            ]
+        }
     
     @staticmethod
-    def update_workspace(workspace_id: str, updates: dict):
+    def update_workspace(workspace_id: str, user_id: str, updates: dict):
         """Update a workspace"""
-        workspaces = WorkspaceService._load_workspaces()
-        for i, workspace in enumerate(workspaces):
-            if workspace.get("id") == workspace_id:
-                workspaces[i].update(updates)
-                workspaces[i]["updatedAt"] = datetime.utcnow().isoformat() + "Z"
-                WorkspaceService._save_workspaces(workspaces)
-                return workspaces[i]
-        return None
+        client = SupabaseService.get_client()
+        
+        # First verify the workspace belongs to the user
+        existing = client.table("workspaces").select("*").eq("id", workspace_id).eq("user_id", user_id).execute()
+        
+        if not existing.data:
+            return None
+        
+        # Update workspace name if provided
+        if "name" in updates:
+            client.table("workspaces").update({
+                "name": updates["name"]
+            }).eq("id", workspace_id).execute()
+        
+        # Update nodes if provided
+        if "nodes" in updates:
+            # Delete existing nodes
+            client.table("nodes").delete().eq("workspace_id", workspace_id).execute()
+            
+            # Insert new nodes
+            for node in updates["nodes"]:
+                client.table("nodes").insert({
+                    "workspace_id": workspace_id,
+                    "node_id": node.get("nodeId"),
+                    "component_id": node.get("componentId"),
+                    "component_name": node.get("componentName"),
+                    "position": node.get("position", {"x": 0, "y": 0}),
+                    "config_overrides": node.get("configOverrides", {})
+                }).execute()
+        
+        # Touch updated_at (trigger handles this, but let's be explicit)
+        client.table("workspaces").update({
+            "updated_at": datetime.utcnow().isoformat() + "Z"
+        }).eq("id", workspace_id).execute()
+        
+        # Return updated workspace
+        return WorkspaceService.get_workspace_by_id(workspace_id, user_id)
     
     @staticmethod
-    def delete_workspace(workspace_id: str):
+    def delete_workspace(workspace_id: str, user_id: str):
         """Delete a workspace"""
-        workspaces = WorkspaceService._load_workspaces()
-        workspaces = [w for w in workspaces if w.get("id") != workspace_id]
-        WorkspaceService._save_workspaces(workspaces)
+        client = SupabaseService.get_client()
+        
+        # First verify the workspace belongs to the user
+        existing = client.table("workspaces").select("*").eq("id", workspace_id).eq("user_id", user_id).execute()
+        
+        if not existing.data:
+            return False
+        
+        # Delete workspace (nodes will be cascade deleted)
+        client.table("workspaces").delete().eq("id", workspace_id).execute()
+        
         return True

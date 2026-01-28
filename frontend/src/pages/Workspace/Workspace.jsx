@@ -13,6 +13,7 @@ import 'reactflow/dist/style.css'
 import ComponentPanel from '../../components/panels/ComponentPanel/ComponentPanel'
 import RightSidebar from '../../components/panels/RightSidebar/RightSidebar'
 import NodeConfigPanel from '../../components/panels/NodeConfigPanel/NodeConfigPanel'
+import { apiGet, apiPut } from '../../utils/api'
 import './Workspace.css'
 
 let nodeIdCounter = 0
@@ -68,7 +69,7 @@ function Workspace() {
 
   const fetchWorkspace = async () => {
     try {
-      const response = await fetch(`/api/workspaces/${id}`)
+      const response = await apiGet(`/api/workspaces/${id}`)
       if (response.status === 404) {
         navigate('/')
         return
@@ -92,11 +93,7 @@ function Workspace() {
     }))
 
     try {
-      const response = await fetch(`/api/workspaces/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodes: nodesToSave })
-      })
+      const response = await apiPut(`/api/workspaces/${id}`, { nodes: nodesToSave })
       const updated = await response.json()
       setWorkspace(updated)
     } catch (error) {

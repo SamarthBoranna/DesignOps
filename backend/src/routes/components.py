@@ -4,7 +4,7 @@ from ..services import componentService
 
 router = APIRouter(prefix="/api/components", tags=["components"])
 
-@router.get("/")
+@router.get("")
 async def list_components(
     search: str = Query(None, description="Search query"),
     category: str = Query(None, description="Filter by category")
